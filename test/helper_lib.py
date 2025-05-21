@@ -175,42 +175,43 @@ class ByteAddressableMemory:
         self.memory = bytearray(size)  # Initialize memory as a bytearray of the given size
 
     def read(self, address):
-        if address < 0 or address + 4 > self.size:
+        if (address < 0 or address + 4 > self.size) and address != 1028:
             raise ValueError("Invalid memory address or length")
         return_val = bytes(self.memory[address : address + 4])
         return_val = return_val[::-1]
         return return_val
     
     def read_byte(self, address):
-        print("read byte address",address)
-        if address < 0 or address > self.size:
+        if (address < 0 or address > self.size) and address != 1028:
             raise ValueError("Invalid memory address or length")
         return_val = self.memory[address]
-        
         return return_val
 
+
     def write(self, address, data):
-        if address < 0 or address + 4> self.size:
+        if (address < 0 or address + 4> self.size) and address != 1024:
             raise ValueError("Invalid memory address or data length")
         
-        data_bytes = int(data).to_bytes(4, byteorder='little')
-        self.memory[address : address + 4] = data_bytes 
-
-        print(self.memory[address : address + 4])       
+        if address != 1024:
+            data_bytes = int(data).to_bytes(4, byteorder='little')
+            self.memory[address : address + 4] = data_bytes 
     
 
     def write_byte(self, addr, value):
         if not 0 <= value <= 0xFF:
             raise ValueError("Value must be a byte")
-        if addr < 0 or addr >= self.size:
+        if (addr < 0 or addr >= self.size) and addr != 1024:
+            print("addr", addr)
             raise ValueError("Address out of range")
-        
-        self.memory[addr] = value
-        
+       
+        if addr != 1024:
+            self.memory[addr] = value
         
 
     def write_half_word(self, address, data):
-        if address < 0 or address + 2 > self.size:
+        if (address < 0 or address + 2 > self.size) and address != 1024:
             raise ValueError("Invalid memory address or data length")
-        data_bytes = int(data).to_bytes(2, byteorder='little')
-        self.memory[address : address + 2] = data_bytes
+        
+        if address != 1024:
+            data_bytes = int(data).to_bytes(2, byteorder='little')
+            self.memory[address : address + 2] = data_bytes

@@ -1,6 +1,7 @@
 module main_decoder(
     input [6:0] op,
     input [2:0] funct3,
+    input [1:0] UARTOp,
 
     output reg RegWrite,
     output reg [2:0] ImmSrc,
@@ -11,12 +12,10 @@ module main_decoder(
     output reg Jump,
     output reg [1:0] ResultSrc,
 
-    output reg AUIPC,
-
     output reg [1:0] operation_byte_size,
     output reg [2:0] MemResultCtr,
 
-    output reg KeepPC
+    output reg [1:0] RegWriteSrcSelect
 );
 
 
@@ -47,7 +46,6 @@ begin
 
     // Branch  => it is different than JUMP ! Be aware!
     Branch = (op[6:0] == 7'b1100_011);
-
 
     // ALUOp
     case (op)
@@ -81,7 +79,6 @@ begin
         operation_byte_size = 2'b11;        // otherwise it will be 4 byte long !
     end
 
-
     // MemResultCtr
     case ({op, funct3})
         10'b00_0001_1000: MemResultCtr = 3'b001;
@@ -92,15 +89,22 @@ begin
         default: MemResultCtr = 3'b000;
     endcase
 
+    // RegWriteSrcSelect
+    case (op)
+        7'b1101_111: RegWriteSrcSelect = 2'b00;           // KeepPC
+        7'b1100_111: RegWriteSrcSelect = 2'b00;           // KeepPC   
 
-    // KeepPC
-    KeepPC = (op == 7'b1101_111 | op ==  7'b1100_111);
+        7'b0010_111: RegWriteSrcSelect = 2'b01;           // AUIPC
 
+        default: begin 
+            if(UARTOp == 2'b01) begin           // UART Read Case 
+                 RegWriteSrcSelect = 2'b11;
+            end else begin
+                RegWriteSrcSelect = 2'b10;     // Result        
+            end
+        end     
+    endcase
 
-    // AUIPC
-    AUIPC = (op == 7'b0010_111);
 end
-
-
 
 endmodule

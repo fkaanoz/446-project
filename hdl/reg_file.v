@@ -10,8 +10,9 @@ wire [WIDTH-1:0] Reg_Out [31:0];
 wire [31:0] Reg_enable;
 
 genvar i;
+register_rsten_neg #(WIDTH) Reg (.clk(clk),.reset(reset),.we(1'b0),.data(32'h00),.out(Reg_Out[0]));
 generate
-    for (i = 0 ; i < 32 ; i = i + 1) begin : registers
+    for (i = 1 ; i < 32 ; i = i + 1) begin : registers
         register_rsten_neg #(WIDTH) Reg (.clk(clk),.reset(reset),.we(Reg_enable[i]& write_enable),.data(DATA),.out(Reg_Out[i]));
     end
 endgenerate

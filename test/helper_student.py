@@ -17,7 +17,13 @@ def Log_Datapath(dut,logger):
     dut._log.info("ALUResult:%s", ToHex(dut.my_datapath.ALUResult.value))
     dut._log.info("PCTarget:%s", ToHex(dut.my_datapath.PCTarget.value))
     dut._log.info("WD3:%s", ToHex(dut.my_datapath.WD3.value))
-    #dut._log.info("MemtoReg:%s", ToHex(dut.my_datapath.MemtoReg.value))
+    dut._log.info("WriteData:%s", ToHex(dut.my_datapath.WriteData.value))
+    dut._log.info("RegWriteSrcSelect:%s", ToHex(dut.my_datapath.RegWriteSrcSelect.value))
+    dut._log.info("WriteData:%s", ToHex(dut.my_datapath.WriteData.value))
+    dut._log.info("cir_buffer:%s", ToHex(dut.my_datapath.fifo_.cir_buffer.value))
+    dut._log.info("fifo => write:%s", ToHex(dut.my_datapath.fifo_.write.value))
+    dut._log.info("write_ptr:%s", ToHex(dut.my_datapath.fifo_.write_ptr.value))
+    dut._log.info("read_ptr:%s", ToHex(dut.my_datapath.fifo_.read_ptr.value))
     #dut._log.info("RegSrc:%s", ToHex(dut.my_datapath.RegSrc.value))
     #dut._log.info("ImmSrc:%s", ToHex(dut.my_datapath.ImmSrc.value))
     #dut._log.info("ALUControl:%s", ToHex(dut.my_datapath.ALUControl.value))
@@ -54,3 +60,14 @@ def Log_Controller(dut,logger):
     #dut._log.info("ShiftControl:%s", ToHex(dut.my_controller.ShiftControl.value))
     #dut._log.info("shamt:%s", ToHex(dut.my_controller.shamt.value))
     #dut._log.info("CondEx:%s", ToHex(dut.my_controller.CondEx.value))
+
+
+
+
+def Log_UART(dut,logger):
+    #Log whatever signal you want from the controller, called before positive clock edge
+    logger.debug("************ UART Signals ***************")
+    dut._log.info("UARTOp:%s", ToHex(dut.my_datapath.uart_.UARTOp.value))
+    dut._log.info("WriteData:%s", ToHex(dut.my_datapath.uart_.WriteData.value))
+    
+    

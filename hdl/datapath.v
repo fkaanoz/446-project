@@ -1,7 +1,9 @@
 module datapath(
     input clk,
     input reset,
+    input CLK100MHZ, // for UART
 
+    // control signals
     input [1:0]PCSrc,
     input RegWrite,
     input [2:0] ImmSrc,
@@ -12,8 +14,6 @@ module datapath(
     input [1:0] operation_byte_size, 
     
     input [2:0] MemResultCtr,
-    input KeepPC,
-    input AUIPC,
 
     output [6:0] op,
     output [2:0] funct3,
@@ -27,7 +27,15 @@ module datapath(
     input [4:0] Debug_Source_select,
     output [31:0] Debug_out,
 
-    output [31:0] fetchPC
+    output [31:0] fetchPC,
+
+    output [31:0]ALUResult,
+    
+    input [1:0] UARTOp,
+    input [1:0] RegWriteSrcSelect,
+
+    input rx,
+    output tx
 );
 
 wire [31:0] PCNext;
@@ -40,12 +48,15 @@ wire [31:0] ImmExt;
 wire [31:0] WriteData;
 wire [31:0] SrcA;
 wire [31:0] SrcB;
-wire [31:0] ALUResult;
 wire [31:0] MemReadResult;
 wire [31:0] ReadData;
 wire [31:0] Result;
 wire [4:0] write_dest;
 wire [31:0] WD3;
+
+wire DataReadFromLine;
+wire [31:0] FIFOOut;
+wire [31:0] UARTReadData;
 
 assign fetchPC = PC;
 
@@ -61,9 +72,8 @@ assign write_dest = Instr[11:7];
 
 adder pc_4_adder(.data_a(PC), .data_b(32'h0000_0004), .out(PCPlus4));
 
-wire [31:0] wride_data_inter;
-mux_2to1 #(.WIDTH(32))  mux_b_regf(.select(KeepPC), .input_0(Result), .input_1(PCPlus4), .output_value(wride_data_inter)); 
-mux_2to1 #(.WIDTH(32))  mux_just_b_regf(.select(AUIPC), .input_0(wride_data_inter), .input_1(PCTarget), .output_value(WD3)); 
+mux_4to1 #(.WIDTH(32)) mux_b_reg_f(.select(RegWriteSrcSelect), .input_0(PCPlus4), .input_1(PCTarget), .input_2(Result), .input_3(FIFOOut), .output_value(WD3));
+
 register_file r_file(.clk(clk), .write_enable(RegWrite), .reset(reset), .Source_select_0(Instr[19:15]), .Source_select_1(Instr[24:20]), .Debug_Source_select(Debug_Source_select), .Destination_select(write_dest), .DATA(WD3), .out_0(SrcA), .out_1(WriteData), .Debug_out(Debug_out));
 
 extender ext(.control(ImmSrc), .in(Instr), .out(ImmExt));
@@ -76,6 +86,10 @@ reg CI;
 alu alu_dp(.control(ALUControl), .DATA_A(SrcA), .DATA_B(SrcB), .OUT(ALUResult), .CI(CI), .CO(CarryOut), .OVF(Overflow), .N(Negative), .Z(Zero));
 
 data_memory #(.ADDR_WIDTH(32), .BYTE_SIZE(4)) d_mem(.clk(clk), .WE(MemWrite), .ADDR(ALUResult), .operation_byte_size(operation_byte_size), .WD(WriteData), .RD(MemReadResult));
+
+
+fifo #(.WIDTH(32), .DEPTH(6)) fifo_(.clk(clk), .reset(reset), .write(DataReadFromLine), .read(UARTOp == 2'b01),  .data_in(UARTReadData), .data_out(FIFOOut));
+uart uart_(.clk(CLK100MHZ), .UARTOp(UARTOp), .WriteData(WriteData[7:0]), .ReadData(UARTReadData), .DataReadFromLine(DataReadFromLine), .rx(rx), .tx(tx));
 
 mem_res_extender mr_ext(.in(MemReadResult), .out(ReadData), .control(MemResultCtr));
 

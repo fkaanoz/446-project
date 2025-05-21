@@ -6,7 +6,7 @@ from cocotb.binary import BinaryValue
 
 
 from helper_lib import read_file_to_list,Instruction, rotate_right, shift_helper, ByteAddressableMemory, reverse_hex_string_endiannes, sign_extend, zero_extend
-from helper_student import Log_Datapath,Log_Controller
+from helper_student import Log_Datapath,Log_Controller,Log_UART
 
 
 class TB:
@@ -32,6 +32,7 @@ class TB:
     def log_dut(self):
         Log_Datapath(self.dut,self.logger)
         Log_Controller(self.dut,self.logger)
+        Log_UART(self.dut,self.logger)
 
     #Compares and lgos the PC and register file of Python module and HDL design
     def compare_result(self):
@@ -40,8 +41,8 @@ class TB:
         for i in range(32):
             self.logger.debug("Register%d: %d \t %d",i,self.Register_File[i], self.dut_regfile.Reg_Out[i].value.integer)
         assert self.PC == self.dut_PC.value
-        # for i in range(32):
-        #    assert self.Register_File[i] == self.dut_regfile.Reg_Out[i].value
+        for i in range(32):
+           assert self.Register_File[i] == self.dut_regfile.Reg_Out[i].value
 
     def write_to_register_file(self,register_no, data):
         if(data <0):
@@ -85,8 +86,6 @@ class TB:
 
 
     def execute_load_type(self):
-        
-
         match self.inst_fields.funct3:
             case 0: self.write_to_register_file(self.inst_fields.rd, sign_extend(int.from_bytes(self.memory.read(self.Register_File[self.inst_fields.rs1] + self.inst_fields.imm11_0)), 8))
             case 1: self.write_to_register_file(self.inst_fields.rd, sign_extend( int.from_bytes(self.memory.read(self.Register_File[self.inst_fields.rs1] + self.inst_fields.imm11_0)), 16))
@@ -95,7 +94,6 @@ class TB:
             case 5: self.write_to_register_file(self.inst_fields.rd, zero_extend(int.from_bytes(self.memory.read(self.Register_File[self.inst_fields.rs1] + self.inst_fields.imm11_0)), 16))
             case _: raise TypeError("Something terrible @execute_load_type!")
 
-    
     def execute_register_imm_type(self):
         match self.inst_fields.funct3:
             case 0: self.write_to_register_file(self.inst_fields.rd, self.Register_File[self.inst_fields.rs1] + sign_extend(self.inst_fields.imm11_0, 12))
@@ -114,10 +112,8 @@ class TB:
             case _: raise TypeError("Something terrible @execute_register_imm_type!")
 
     def execute_auipc(self):
-        print("self.inst_fields.imm31_12 << 12", self.inst_fields.imm31_12 << 12)
-        print("self.PC - 4 ", self.PC - 4 )
+
         self.write_to_register_file(self.inst_fields.rd, self.PC - 4 + (self.inst_fields.imm31_12 << 12))
-    
 
     def execute_store_type(self):
         target_address = self.Register_File[self.inst_fields.rs1] + (self.inst_fields.imm11_5 << 5 | self.inst_fields.imm4_0)
@@ -127,9 +123,6 @@ class TB:
             case 2: self.memory.write(target_address,  self.Register_File[self.inst_fields.rs2]& 0xFFFFFFFF)
             case _: raise TypeError("Something terrible @execute_store_type!")
         
-        
-
-
 
     def execute_register_type(self):
         match self.inst_fields.funct3:
@@ -153,9 +146,9 @@ class TB:
             case 7: self.write_to_register_file(self.inst_fields.rd, self.Register_File[self.inst_fields.rs1] & self.Register_File[self.inst_fields.rs2])
             case _: raise TypeError("Something terrible @execute_register_type!")
 
+
     def execute_lui(self):
         self.write_to_register_file(self.inst_fields.rd, self.inst_fields.imm31_12 << 12)
-
 
 
     def execute_branch_type(self):
@@ -168,8 +161,6 @@ class TB:
             case 5: self.PC = (self.PC + (self.inst_fields.imm12 << 12 | self.inst_fields.imm11B << 11 | self.inst_fields.imm10_5 << 5 | self.inst_fields.imm4_1 << 1)) if (self.Register_File[self.inst_fields.rs1] & 0xFFFFFFFF)  >= (self.Register_File[self.inst_fields.rs2] & 0xFFFFFFFF) else self.PC
             case _: raise TypeError("Something terrible @execute_register_imm_type!")
 
-
-
     def execute_jalr_type(self):
         self.PC = (self.Register_File[self.inst_fields.rs1] + sign_extend(self.inst_fields.imm11_0, 12))  & ~1
         self.write_to_register_file(self.inst_fields.rd, self.PC + 4)
@@ -178,12 +169,10 @@ class TB:
         imm = self.inst_fields.imm20 << 20 | self.inst_fields.imm19_12 << 12 | self.inst_fields.imm11J << 11 | self.inst_fields.imm10_1 << 1
         self.PC = self.PC + sign_extend(imm, 21)
 
-
     def print_whole_memory(self):
         self.logger.debug("******** WHOLE MEMORY CONTENT ***********")        
         for i in range(256):
             self.logger.debug("loc %d  ; content %d", i, self.memory.read_byte(i))
-
 
     def arith_right_shift(self, reg_value, shamt):
         if reg_value & (1 << 31):
@@ -211,9 +200,9 @@ class TB:
             await FallingEdge(self.dut.clk)
             self.compare_result()
         
+            
             counter = counter + 1
-            if(counter == 40):
-                # self.print_whole_memory()
+            if(counter == 46):
                 break
                 
                    

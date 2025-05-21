@@ -6,7 +6,7 @@ def convert_big_to_little(hex_str):
     little_endian = ' '.join(reversed(bytes_list)).upper()
     return little_endian
 
-def process_file(input_path='inst.txt', output_path='Instructions.hex'):
+def process_file(input_path='normal_inst.txt', output_path='Instructions.hex'):
     with open(input_path, 'r') as infile, open(output_path, 'w') as outfile:
         for line in infile:
             if line.strip():  # Skip empty lines
