@@ -202,7 +202,7 @@ class TB:
         
             
             counter = counter + 1
-            if(counter ==1):
+            if(counter == 2):
                 break
                 
                    
