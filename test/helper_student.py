@@ -26,6 +26,8 @@ def Log_Datapath(dut,logger):
     dut._log.info("fifo => data_out:%s", ToHex(dut.my_datapath.fifo_.data_out.value))
     dut._log.info("write_ptr:%s", ToHex(dut.my_datapath.fifo_.write_ptr.value))
     dut._log.info("read_ptr:%s", ToHex(dut.my_datapath.fifo_.read_ptr.value))
+    dut._log.info("RegWrite:%s", ToHex(dut.my_datapath.RegWrite.value))
+    dut._log.info("WD3:%s", ToHex(dut.my_datapath.WD3.value))
     #dut._log.info("RegSrc:%s", ToHex(dut.my_datapath.RegSrc.value))
     #dut._log.info("ImmSrc:%s", ToHex(dut.my_datapath.ImmSrc.value))
     #dut._log.info("ALUControl:%s", ToHex(dut.my_datapath.ALUControl.value))

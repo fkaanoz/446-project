@@ -46,7 +46,10 @@ class TB:
 
     def write_to_register_file(self,register_no, data):
         if(data <0):
-            data = data + (1 << 32) 
+            data = data + (1 << 32)
+        if(register_no == 0):
+            self.logger.debug("Attempt to write to register 0, ignoring")
+            return
         self.Register_File[register_no] = data
         
 
@@ -162,12 +165,15 @@ class TB:
             case _: raise TypeError("Something terrible @execute_register_imm_type!")
 
     def execute_jalr_type(self):
-        self.PC = (self.Register_File[self.inst_fields.rs1] + sign_extend(self.inst_fields.imm11_0, 12))  & ~1
-        self.write_to_register_file(self.inst_fields.rd, self.PC + 4)
+        self.write_to_register_file(self.inst_fields.rd, self.PC)
+        self.PC = -4 + (self.Register_File[self.inst_fields.rs1] + sign_extend(self.inst_fields.imm11_0, 12))  & ~1
+        # I added -4 because before match statement, PC is already incremented by 4
     
     def execute_jal_type(self):
         imm = self.inst_fields.imm20 << 20 | self.inst_fields.imm19_12 << 12 | self.inst_fields.imm11J << 11 | self.inst_fields.imm10_1 << 1
-        self.PC = self.PC + sign_extend(imm, 21)
+        self.write_to_register_file(self.inst_fields.rd, self.PC)
+        self.PC = self.PC + sign_extend(imm, 21) - 4
+        # I added -4 because before match statement, PC is already incremented by 4
 
     def print_whole_memory(self):
         self.logger.debug("******** WHOLE MEMORY CONTENT ***********")        
@@ -199,10 +205,11 @@ class TB:
             await RisingEdge(self.dut.clk)
             await FallingEdge(self.dut.clk)
             self.compare_result()
-        
+
+            print("self.PC", self.PC)
             
             counter = counter + 1
-            if(counter == 2):
+            if(counter == 100):
                 break
                 
                    

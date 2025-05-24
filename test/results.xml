@@ -1,6 +1,6 @@
 <testsuites name="results">
   <testsuite name="all" package="all">
-    <property name="random_seed" value="1748117117" />
-    <testcase name="riscv_test" classname="riscv_test" file="/Users/fkaanoz/Desktop/446/project/test/riscv_test.py" lineno="209" time="0.0041501522064208984" sim_time_ns="40000.001" ratio_time="9638200.964801745" />
+    <property name="random_seed" value="1748119553" />
+    <testcase name="riscv_test" classname="riscv_test" file="/Users/fkaanoz/Desktop/446/project/test/riscv_test.py" lineno="216" time="0.04167604446411133" sim_time_ns="430000.001" ratio_time="10317677.853767714" />
   </testsuite>
 </testsuites>
