@@ -1,6 +1,8 @@
 <testsuites name="results">
   <testsuite name="all" package="all">
-    <property name="random_seed" value="1748120926" />
-    <testcase name="riscv_test" classname="riscv_test" file="/Users/fkaanoz/Desktop/446/project/test/riscv_test.py" lineno="216" time="0.043298959732055664" sim_time_ns="430000.001" ratio_time="9930954.546274161" />
+    <property name="random_seed" value="1748122135" />
+    <testcase name="riscv_test" classname="riscv_test" file="/Users/fkaanoz/Desktop/446/project/test/riscv_test.py" lineno="216" time="0.011388063430786133" sim_time_ns="120000.001" ratio_time="10537349.192804439">
+      <failure message="Test failed with RANDOM_SEED=1748122135" />
+    </testcase>
   </testsuite>
 </testsuites>

@@ -14,7 +14,7 @@ module uart(
 // if UARTOp = 10 => write to line ! <=  UARTOp  => 10 for UART WRITE
 
 
-parameter CLK_FREQUENCY = 100_000_000;
+parameter CLK_FREQUENCY = 50_000_000;
 parameter BAUD_RATE = 9600;
 parameter REQ_CLKS_FOR_BIT = CLK_FREQUENCY / BAUD_RATE;        
 // Required clock count for one bit!
