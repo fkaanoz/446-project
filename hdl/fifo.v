@@ -92,7 +92,7 @@ always @(posedge read_clk) begin
             if (data_counter != 0) begin
                 data_out <= cir_buffer[read_ptr];
             end else begin
-                data_out <= 32'h00000000; // Return 0 instead of 0xFFFFFFFF when no data
+                data_out <= 32'hFFFFFFFF; // Return 0 instead of 0xFFFFFFFF when no data
             end
         end
     end
