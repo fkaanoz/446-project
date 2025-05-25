@@ -1,0 +1,19 @@
+// variations of Store and Load instructions are tested
+// sb, sw, sh, lb, sw, lh are checked. => Lots of edge cases are checked
+0x00700093      addi x1, x0, 7
+0x02a00113      addi x2, x0, 42
+0x0ff00193      addi x3, x0, 0xFF
+0x00a11213      slli x4, x2, 10  // now x4 has 43008 (0xA800)
+0x01420213      addi x4, x4, 20   // now x4 has 43028 (0xA814)
+0x01e0a623      sw x30, 12(x1)   // store x30 = 00 => to mem[x1 + 12]  => make everything to be 0 at that memory location
+0x00408623      sb x4, 12(x1)   // store the least sign byte of x4 to address of [x0] + 12  => LAST 8 bits => 0x14 = 20
+0x00c08283      lb x5, 12(x1)   // load the least sign byte of address of [x0] + 12  to x5  => LAST 8 bits => 0x14 = 20
+0x00c0a783      lw x15, 12(x1)   // load whole 32 bits of that location => it should be 0x14 = 20 also.
+0x00321213      slli x4, x4, 3  // now x4 has 344224 (0x540A0)
+0x00af2b23      sw x10, 22(x30) // store x10 = 00 => to mem[x30 + 22]  => make everything to be 0 at that memory location
+0x004f1b23      sh x4, 22(x30)  // store last 16 bits of 0x540A0 => mem[22] = 0x40A0 expected (16544)
+0x016f1303      lh x6, 22(x30)   // x6 = 16544
+0x016f2803      lw x16, 22(x30)   // load whole 32 bits of that location  x16 =16544 should be
+0x004e2a23      sw x4 20(x28)  => mem[20 + 0] = 0x540A0 WHOLE WORD
+0x003e0a23      sb x3 20(x28)  => mem[20 + 0] = 0xFF JUST BYTE
+0x014e2a03      lw x20 20(x28) => x20 = mem[20+0] = 0x540FF (344319)

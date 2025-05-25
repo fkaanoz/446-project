@@ -1,0 +1,16 @@
+// it makes some operations, then stuck in a loop until x15 to be equal to 20 !
+// JAL, BEQ, BGE is tested
+0x0106f397      auipc x7, 4207
+0x0074a623      sw x7, 12(x9)
+0x00c9a703      lw x14, 12(x19)
+0x00e3d463      bge x7, x14, 8
+0x00178793      addi x15, x15, 1   // will be passed in its first time, then will be done with JAL
+0x4d076e13      ori x28, x14, 1232
+0xfef7fa13      andi x20, x15, 0xFEF
+0x014d8f13      addi x30, x27, 20
+0x01e78463      beq x15, x30, 8    // 
+0xfedff26f      jal x4, -20
+0x00001837      lui x16, 1        // after 20 iterations it will be executed
+0x000018b7      lui x17, 1
+0x00001937      lui x18, 1
+0x000019b7      lui x19, 1

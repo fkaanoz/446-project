@@ -155,13 +155,15 @@ class TB:
 
 
     def execute_branch_type(self):
+        print("self.inst_fields.funct3",self.inst_fields.funct3)
+        ext_part = sign_extend(self.inst_fields.imm12 << 12 | self.inst_fields.imm11B << 11 | self.inst_fields.imm10_5 << 5 | self.inst_fields.imm4_1 << 1, 13)
         match self.inst_fields.funct3:
-            case 0: self.PC = (self.PC + (self.inst_fields.imm12 << 12 | self.inst_fields.imm11B << 11 | self.inst_fields.imm10_5 << 5 | self.inst_fields.imm4_1 << 1)) if self.Register_File[self.inst_fields.rs1] == self.Register_File[self.inst_fields.rs2] else self.PC
-            case 1: self.PC = (self.PC + (self.inst_fields.imm12 << 12 | self.inst_fields.imm11B << 11 | self.inst_fields.imm10_5 << 5 | self.inst_fields.imm4_1 << 1)) if self.Register_File[self.inst_fields.rs1] != self.Register_File[self.inst_fields.rs2] else self.PC
-            case 2: self.PC = (self.PC + (self.inst_fields.imm12 << 12 | self.inst_fields.imm11B << 11 | self.inst_fields.imm10_5 << 5 | self.inst_fields.imm4_1 << 1)) if self.Register_File[self.inst_fields.rs1] < self.Register_File[self.inst_fields.rs2] else self.PC
-            case 3: self.PC = (self.PC + (self.inst_fields.imm12 << 12 | self.inst_fields.imm11B << 11 | self.inst_fields.imm10_5 << 5 | self.inst_fields.imm4_1 << 1)) if self.Register_File[self.inst_fields.rs1] >= self.Register_File[self.inst_fields.rs2] else self.PC
-            case 4: self.PC = (self.PC + (self.inst_fields.imm12 << 12 | self.inst_fields.imm11B << 11 | self.inst_fields.imm10_5 << 5 | self.inst_fields.imm4_1 << 1)) if (self.Register_File[self.inst_fields.rs1] & 0xFFFFFFFF)  <  (self.Register_File[self.inst_fields.rs2] & 0xFFFFFFFF) else self.PC
-            case 5: self.PC = (self.PC + (self.inst_fields.imm12 << 12 | self.inst_fields.imm11B << 11 | self.inst_fields.imm10_5 << 5 | self.inst_fields.imm4_1 << 1)) if (self.Register_File[self.inst_fields.rs1] & 0xFFFFFFFF)  >= (self.Register_File[self.inst_fields.rs2] & 0xFFFFFFFF) else self.PC
+            case 0: self.PC = (self.PC - 4 + ext_part) if self.Register_File[self.inst_fields.rs1] == self.Register_File[self.inst_fields.rs2] else self.PC
+            case 1: self.PC = (self.PC - 4 + ext_part) if self.Register_File[self.inst_fields.rs1] != self.Register_File[self.inst_fields.rs2] else self.PC
+            case 4: self.PC = (self.PC - 4 + ext_part) if self.Register_File[self.inst_fields.rs1] < self.Register_File[self.inst_fields.rs2] else self.PC
+            case 5: self.PC = (self.PC - 4 + ext_part) if self.Register_File[self.inst_fields.rs1] >= self.Register_File[self.inst_fields.rs2] else self.PC
+            case 6: self.PC = (self.PC - 4 + ext_part) if (self.Register_File[self.inst_fields.rs1] & 0xFFFFFFFF)  <  (self.Register_File[self.inst_fields.rs2] & 0xFFFFFFFF) else self.PC
+            case 7: self.PC = (self.PC - 4 + ext_part) if (self.Register_File[self.inst_fields.rs1] & 0xFFFFFFFF)  >= (self.Register_File[self.inst_fields.rs2] & 0xFFFFFFFF) else self.PC
             case _: raise TypeError("Something terrible @execute_register_imm_type!")
 
     def execute_jalr_type(self):
@@ -209,7 +211,7 @@ class TB:
             print("self.PC", self.PC)
             
             counter = counter + 1
-            if(counter == 100):
+            if(counter == 400):
                 break
                 
                    

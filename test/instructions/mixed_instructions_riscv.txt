@@ -1,0 +1,23 @@
+// this code calculate 10!, use some Jump, Branch, Arith instructions + Load/Store
+0x00a00093          addi x1, x0, 10     => x1 = 10
+0x00100113          addi x2, x0, 1      => x2 = 1
+0x00200193          addi x3, x0, 2      => x3 = 2
+0x00000213          addi x4, x0, 0      
+0x00000293          addi x5, x0, 0    
+0x00220233          add  x4, x4, x2     => x4 = x4 + 1 = 1
+0x00128293          addi x5, x5, 1      => x5 = x5 + 1
+0xfe32cce3          blt  x5, x3, -8     => 1 < 2 => TRUE go back => First round 
+0x00400133          add  x2, x0, x4     => x2 = x4 
+0x00118193          addi x3, x3, 1      => x3 = x3 + 1 => increment x3 => counter for inner loop
+0x0030c463          blt  x1, x3, 8      
+0xfe1ff06f          jal  x0, -32        => like outer loop => go to reset x4 and x5
+0x00202023          sw   x2, 0(x0)          => 3628800 (375F00)
+0x00002303          lw   x6, 0(x0)          => 3628800 (375F00)
+0x00000513          addi x10, x0, 0     
+0x004012a3          sh  x4, 5(x0)           => 24320 (5F00)
+0x00501403          lh  x8  5(x0)           => 24320 (5F00)
+0x00800613          addi x12, x0, 8         => shift amount
+0x00c45733          srl x14, x8, x12        => (5F00) >> 8 => x14 = 5F = 95
+0x00400623          sb  x14, 12(x0)         
+0x00c00503          lb  x14, 12(x0)
+0x00000000          END OF PROGRAM => for Testbench

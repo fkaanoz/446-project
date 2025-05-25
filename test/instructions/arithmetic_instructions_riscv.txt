@@ -1,3 +1,4 @@
+// many R and I type instruction, shift operations, auipc are tested
 0x00c08093  addi x1, x1, 12
 0x40128023  sb x1, 1024(x5)
 0x01000117  auipc x2, 4096
