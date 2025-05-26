@@ -87,8 +87,7 @@ alu alu_dp(.control(ALUControl), .DATA_A(SrcA), .DATA_B(SrcB), .OUT(ALUResult), 
 
 data_memory #(.ADDR_WIDTH(32), .BYTE_SIZE(4)) d_mem(.clk(clk), .WE(MemWrite), .ADDR(ALUResult), .operation_byte_size(operation_byte_size), .WD(WriteData), .RD(MemReadResult));
 
-
-fifo #(.WIDTH(32), .DEPTH(16)) fifo_(.clk(CLK100MHZ), .reset(reset), .write(DataReadFromLine), .UARTOp(UARTOp),  .data_in(UARTReadData), .data_out(FIFOOut), .read_clk(clk));
+fifo #(.WIDTH(32), .DEPTH(4)) fifo_(.clk(clk), .UARTOp(UARTOp), .reset(reset), .write(DataReadFromLine),  .data_in(UARTReadData), .data_out(FIFOOut));
 uart uart_(.clk(CLK100MHZ), .UARTOp(UARTOp), .WriteData(WriteData[7:0]), .ReadData(UARTReadData), .DataReadFromLine(DataReadFromLine), .rx(rx), .tx(tx));
 
 mem_res_extender mr_ext(.in(MemReadResult), .out(ReadData), .control(MemResultCtr));
